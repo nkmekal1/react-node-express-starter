@@ -2,6 +2,20 @@ import express from 'express';
 import path from 'path';
 import expressHBS from 'express-hbs';
 import webpack from 'webpack';
+import multer from 'multer';
+import fs from 'fs';
+import bodyParser from 'body-parser';
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, `uploads`);
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.fieldname}|${Date.now()}|${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage });
 
 const app = express();
 
@@ -23,6 +37,16 @@ app.engine('hbs', expressHBS.express4({
     partialsDir: path.resolve('./src/server/views/partials'),
     layoutsDir: path.resolve('./src/server/views/layouts')
 }));
+
+app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.json({limit: '15mb'}));
+
+app.post('/upload', upload.any(), (req, res) => {
+    let base64Image = req.body.profileImage.split(';base64,').pop();
+    fs.writeFile('./uploads/image.png', base64Image, {encoding: 'base64'}, function(err) {
+        res.json('upload complete');
+    }); 
+});
 
 app.get('*', (req, res) => {
     res.render('home');

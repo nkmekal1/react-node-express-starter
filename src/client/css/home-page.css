@@ -1,3 +1,33 @@
-h3 {
-    color: green;
+#app {
+    margin-top: 15%;
+}
+
+.placeholder-title {
+    color: #ccc;
+    outline: none;
+    display: block
+}
+
+.title {
+    color: black;
+    outline: none;
+    display: block;
+}
+
+.title-input {
+    outline: none;
+    font-size: 1.75rem;
+    font-weight: 500;
+    border: none;
+    width: 100%;
+    resize: none;
+}
+
+[contentEditable] {
+    -webkit-user-select: text;
+    user-select: text;
+    /* caret-color: black; */
+    -webkit-user-modify: read-write;
+    overflow-wrap: break-word;
+    -webkit-line-break: after-white-space;
 }
