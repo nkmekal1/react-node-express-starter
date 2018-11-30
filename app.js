@@ -43,7 +43,7 @@ app.use(bodyParser.json({limit: '15mb'}));
 
 app.post('/upload', upload.any(), (req, res) => {
     let base64Image = req.body.profileImage.split(';base64,').pop();
-    fs.writeFile('./uploads/image.png', base64Image, {encoding: 'base64'}, function(err) {
+    fs.writeFile(`./uploads/${req.body.fileName}|${Date.now()}.png`, base64Image, {encoding: 'base64'}, function(err) {
         res.json('upload complete');
     }); 
 });

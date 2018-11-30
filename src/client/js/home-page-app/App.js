@@ -34,23 +34,34 @@ class App extends React.Component {
         let selfThis = this;
         let selectedImage = e.target.files[0];
         let fileReader = new FileReader();
+        console.log(selectedImage)
         fileReader.addEventListener('load', () => {
             
             const blobResult = fileReader.result;            
-            this.downscaleImage(blobResult, 1600)
-            .then(compressedBlobResult => {
-                selfThis.setState({
-                    originalImageResult: fileReader.result,
-                    compressedImageResult: compressedBlobResult
-                }, () => {
-                    axios.post('/upload', {
-                        profileImage: compressedBlobResult
-                    })
-                    .then(response => {
-                        console.log(response.data);
+            if(Math.floor(selectedImage.size/1000) > 300) {
+                this.downscaleImage(blobResult, 1200)
+                .then(compressedBlobResult => {
+                    selfThis.setState({
+                        compressedImageResult: compressedBlobResult
+                    }, () => {
+                        axios.post('/upload', {
+                            profileImage: compressedBlobResult,
+                            fileName: selectedImage.name.substring(0, selectedImage.name.lastIndexOf('.')),
+                        })
+                        .then(response => {
+                            console.log(response.data);
+                        });
                     });
                 });
-            });
+            } else {
+                axios.post('/upload', {
+                    profileImage: blobResult,
+                    fileName: selectedImage.name.substring(0, selectedImage.name.lastIndexOf('.')),
+                })
+                .then(response => {
+                    console.log(response.data);
+                });
+            }
         });
 
         fileReader.readAsDataURL(selectedImage);
@@ -105,8 +116,7 @@ class App extends React.Component {
                         accept="image/*"
                         onChange={this.onImageSelected}
                     ></input>
-                    <img id="original-image-result" src={this.state.originalImageResult}></img>
-                    <hr />
+                    
                     <img id="compressed-image-result" src={this.state.compressedImageResult}></img>
             </div>
         )
